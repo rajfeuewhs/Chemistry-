@@ -2,111 +2,81 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>28 February Countdown</title>
+<title>Coming Soon Timer</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+body{
+  margin:0;
+  height:100vh;
+  background:#111;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-family: Arial, sans-serif;
+  color:#eee;
 }
 
-body {
-  height: 100vh;
-  background: radial-gradient(circle at top, #0a0f2c, #000);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  color: #eafcff;
-  overflow: hidden;
+.container{
+  text-align:center;
 }
 
-/* soft moving background */
-body::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(120deg, #0d1b3d, #001f3f, #0d1b3d);
-  background-size: 300% 300%;
-  animation: bgMove 18s ease infinite;
-  opacity: 0.35;
+.title{
+  font-size:32px;
+  letter-spacing:4px;
+  margin-bottom:40px;
+  opacity:0.9;
 }
 
-@keyframes bgMove {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+.timer{
+  display:flex;
+  gap:25px;
 }
 
-.container {
-  position: relative;
-  text-align: center;
-  z-index: 1;
+.card{
+  background:linear-gradient(#2a2a2a, #1a1a1a);
+  border-radius:12px;
+  width:110px;
+  height:120px;
+  position:relative;
+  box-shadow: inset 0 1px 2px rgba(255,255,255,0.1),
+              0 10px 20px rgba(0,0,0,0.6);
 }
 
-.title {
-  font-size: 14px;
-  letter-spacing: 3px;
-  opacity: 0.7;
-  margin-bottom: 30px;
+.card::after{
+  content:"";
+  position:absolute;
+  top:50%;
+  left:0;
+  right:0;
+  height:2px;
+  background:#000;
+  opacity:0.6;
 }
 
-.time {
-  display: flex;
-  gap: 22px;
+.num{
+  font-size:56px;
+  font-weight:600;
+  line-height:120px;
+  animation: softSlide 0.6s ease;
 }
 
-.box {
-  min-width: 96px;
-  padding: 18px 20px;
-  border-radius: 18px;
-  background: rgba(0,0,0,0.45);
-  backdrop-filter: blur(12px);
+.label{
+  margin-top:12px;
+  font-size:14px;
+  letter-spacing:1px;
+  color:#caa24d;
 }
 
-.number {
-  font-size: 56px;
-  font-weight: 200;
-  letter-spacing: 3px;
-}
-
-/* ultra soft slide */
-.slide {
-  animation: softSlide 0.9s cubic-bezier(0.25, 1, 0.3, 1);
-}
-
-@keyframes softSlide {
-  from {
-    transform: translateY(-26px);
-    opacity: 0;
-    filter: blur(6px);
+@keyframes softSlide{
+  from{
+    transform:translateY(-18px);
+    opacity:0;
   }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-    filter: blur(0);
+  to{
+    transform:translateY(0);
+    opacity:1;
   }
-}
-
-.label {
-  margin-top: 8px;
-  font-size: 10px;
-  letter-spacing: 2px;
-  opacity: 0.55;
-}
-
-.fullscreen-btn {
-  position: fixed;
-  bottom: 18px;
-  right: 18px;
-  padding: 8px 12px;
-  border-radius: 10px;
-  border: none;
-  background: rgba(255,255,255,0.85);
-  font-size: 12px;
-  font-weight: 600;
 }
 </style>
 </head>
@@ -114,76 +84,58 @@ body::before {
 <body>
 
 <div class="container">
-  <div class="title">COUNTDOWN TO 28 FEBRUARY</div>
+  <div class="title">COMING SOON ....</div>
 
-  <div class="time">
-    <div class="box">
-      <div id="hours" class="number">00</div>
+  <div class="timer">
+    <div>
+      <div class="card"><div id="days" class="num">00</div></div>
+      <div class="label">DAYS</div>
+    </div>
+
+    <div>
+      <div class="card"><div id="hours" class="num">00</div></div>
       <div class="label">HOURS</div>
     </div>
-    <div class="box">
-      <div id="minutes" class="number">00</div>
+
+    <div>
+      <div class="card"><div id="minutes" class="num">00</div></div>
       <div class="label">MINUTES</div>
     </div>
-    <div class="box">
-      <div id="seconds" class="number">00</div>
+
+    <div>
+      <div class="card"><div id="seconds" class="num">00</div></div>
       <div class="label">SECONDS</div>
     </div>
   </div>
 </div>
 
-<button class="fullscreen-btn" onclick="goFull()">FULL</button>
-
-<audio id="alarm">
-  <source src="https://actions.google.com/sounds/v1/alarms/soft_bell.ogg">
-</audio>
-
 <script>
+const d = document.getElementById("days");
 const h = document.getElementById("hours");
 const m = document.getElementById("minutes");
 const s = document.getElementById("seconds");
-const alarm = document.getElementById("alarm");
 
-function softSet(el, value) {
-  if (el.innerText !== value) {
-    el.classList.remove("slide");
-    void el.offsetWidth;
-    el.innerText = value;
-    el.classList.add("slide");
-  }
-}
-
-function update() {
+function update(){
   const now = new Date();
   let year = now.getFullYear();
-  let target = new Date(year, 1, 28, 0, 0, 0);
-  if (now > target) target = new Date(year + 1, 1, 28, 0, 0, 0);
+  let target = new Date(year,1,28,0,0,0);
+  if(now > target) target = new Date(year+1,1,28,0,0,0);
 
   const diff = target - now;
 
-  if (diff <= 0) {
-    softSet(h, "00");
-    softSet(m, "00");
-    softSet(s, "00");
-    alarm.play();
-    return;
-  }
+  const days = Math.floor(diff / (1000*60*60*24));
+  const hours = Math.floor((diff/(1000*60*60))%24);
+  const minutes = Math.floor((diff/(1000*60))%60);
+  const seconds = Math.floor((diff/1000)%60);
 
-  const hours = String(Math.floor(diff / 3600000)).padStart(2, "0");
-  const minutes = String(Math.floor((diff / 60000) % 60)).padStart(2, "0");
-  const seconds = String(Math.floor((diff / 1000) % 60)).padStart(2, "0");
-
-  softSet(h, hours);
-  softSet(m, minutes);
-  softSet(s, seconds);
+  d.innerText = String(days).padStart(2,"0");
+  h.innerText = String(hours).padStart(2,"0");
+  m.innerText = String(minutes).padStart(2,"0");
+  s.innerText = String(seconds).padStart(2,"0");
 }
 
-setInterval(update, 950);
+setInterval(update,1000);
 update();
-
-function goFull() {
-  document.documentElement.requestFullscreen?.();
-}
 </script>
 
 </body>
