@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>28 February Countdown</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  height: 100vh;
+  background: linear-gradient(270deg, #000428, #004e92);
+  background-size: 400% 400%;
+  animation: bgMove 10s ease infinite;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Segoe UI', sans-serif;
+  color: #00ffd5;
+}
+
+@keyframes bgMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.container {
+  text-align: center;
+}
+
+.title {
+  font-size: 24px;
+  margin-bottom: 20px;
+  letter-spacing: 2px;
+}
+
+.time {
+  display: flex;
+  gap: 15px;
+  font-size: 50px;
+}
+
+.box {
+  background: rgba(0,0,0,0.6);
+  padding: 20px 18px;
+  border-radius: 12px;
+  min-width: 90px;
+}
+
+.label {
+  font-size: 12px;
+  margin-top: 6px;
+  color: #aaa;
+}
+
+.flip {
+  animation: flip 0.5s ease;
+}
+
+@keyframes flip {
+  0% { transform: rotateX(0deg); }
+  50% { transform: rotateX(90deg); }
+  100% { transform: rotateX(0deg); }
+}
+
+.fullscreen-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #00ffd5;
+  color: black;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <div class="title">⏳ 28 FEBRUARY COUNTDOWN</div>
+
+  <div class="time">
+    <div class="box">
+      <div id="hours">00</div>
+      <div class="label">HOURS</div>
+    </div>
+    <div class="box">
+      <div id="minutes">00</div>
+      <div class="label">MINUTES</div>
+    </div>
+    <div class="box">
+      <div id="seconds">00</div>
+      <div class="label">SECONDS</div>
+    </div>
+  </div>
+</div>
+
+<button class="fullscreen-btn" onclick="goFull()">FULLSCREEN</button>
+
+<audio id="alarm">
+  <source src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg">
+</audio>
+
+<script>
+const h = document.getElementById("hours");
+const m = document.getElementById("minutes");
+const s = document.getElementById("seconds");
+const alarm = document.getElementById("alarm");
+
+function flip(el, value) {
+  if (el.innerText !== value) {
+    el.classList.remove("flip");
+    void el.offsetWidth;
+    el.innerText = value;
+    el.classList.add("flip");
+  }
+}
+
+function update() {
+  const now = new Date();
+  let year = now.getFullYear();
+  let target = new Date(year, 1, 28, 0, 0, 0);
+  if (now > target) target = new Date(year + 1, 1, 28, 0, 0, 0);
+
+  const diff = target - now;
+
+  if (diff <= 0) {
+    flip(h, "00");
+    flip(m, "00");
+    flip(s, "00");
+    alarm.play();
+    return;
+  }
+
+  const hours = String(Math.floor(diff / 3600000)).padStart(2, "0");
+  const minutes = String(Math.floor((diff / 60000) % 60)).padStart(2, "0");
+  const seconds = String(Math.floor((diff / 1000) % 60)).padStart(2, "0");
+
+  flip(h, hours);
+  flip(m, minutes);
+  flip(s, seconds);
+}
+
+setInterval(update, 1000);
+update();
+
+function goFull() {
+  if (document.documentElement.requestFullscreen) {
+    document.documentElement.requestFullscreen();
+  }
+}
+</script>
+
+</body>
+</html>
