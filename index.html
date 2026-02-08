@@ -2,19 +2,20 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Coming Soon Countdown</title>
+<title>Coming Soon</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
 body{
   margin:0;
   height:100vh;
-  background:#0b0b0b;
+  background:#111;
   display:flex;
   justify-content:center;
   align-items:center;
   font-family:system-ui, sans-serif;
   color:#eee;
+  overflow:hidden;
 }
 
 .container{
@@ -30,7 +31,6 @@ body{
 .timer{
   display:flex;
   gap:22px;
-  margin-bottom:35px;
 }
 
 .block{
@@ -61,7 +61,6 @@ body{
   font-size:56px;
   font-weight:600;
   line-height:120px;
-  animation:slide .6s ease;
 }
 
 .label{
@@ -71,30 +70,29 @@ body{
   color:#caa24d;
 }
 
-@keyframes slide{
-  from{transform:translateY(-16px);opacity:0}
-  to{transform:translateY(0);opacity:1}
+/* 🔊 SIDE VOLUME BUTTON */
+.volume-box{
+  position:fixed;
+  right:14px;
+  top:50%;
+  transform:translateY(-50%);
 }
 
-/* music controls */
-.controls{
-  margin-top:25px;
-  background:rgba(255,255,255,0.05);
-  padding:18px;
-  border-radius:16px;
-}
-
-select, input[type=range]{
-  width:100%;
-  margin-top:10px;
-}
-
-button{
-  margin-top:12px;
-  padding:10px 16px;
+.vol-btn{
+  background:#222;
+  color:#fff;
   border:none;
-  border-radius:12px;
-  font-weight:600;
+  border-radius:50%;
+  width:42px;
+  height:42px;
+  font-size:18px;
+}
+
+.vol-slider{
+  display:none;
+  margin-top:10px;
+  transform:rotate(-90deg);
+  width:120px;
 }
 </style>
 </head>
@@ -102,7 +100,6 @@ button{
 <body>
 
 <div class="container">
-
   <div class="title">COMING SOON …</div>
 
   <div class="timer">
@@ -123,28 +120,18 @@ button{
       <div class="label">SECONDS</div>
     </div>
   </div>
-
-  <!-- MUSIC CONTROLS -->
-  <div class="controls">
-    <b>🎵 Background Music</b>
-
-    <!-- SONG SELECT -->
-    <select id="songSelect">
-      <option value="LINK_1">Song 1 – Calm</option>
-      <option value="LINK_2">Song 2 – Focus</option>
-      <option value="LINK_3">Song 3 – Chill</option>
-    </select>
-
-    <!-- VOLUME -->
-    <label>🔊 Volume</label>
-    <input type="range" id="volume" min="0" max="100" value="25">
-
-    <button id="playBtn">▶ Start Music</button>
-  </div>
-
 </div>
 
-<audio id="bgMusic" loop></audio>
+<!-- 🔊 Volume Control -->
+<div class="volume-box">
+  <button class="vol-btn" id="volBtn">🔊</button>
+  <input type="range" id="volSlider" class="vol-slider" min="0" max="100" value="25">
+</div>
+
+<!-- 🎵 Background Music -->
+<audio id="bgMusic" loop>
+  <source src="https://drive.google.com/file/d/1twIfpSG0zQEGZ0RZUXR3vpj9Qi7B3SRI/view?usp=drivesdk" type="audio/mpeg">
+</audio>
 
 <script>
 const d=document.getElementById("days");
@@ -153,29 +140,25 @@ const m=document.getElementById("minutes");
 const s=document.getElementById("seconds");
 
 const music=document.getElementById("bgMusic");
-const songSelect=document.getElementById("songSelect");
-const volume=document.getElementById("volume");
-const playBtn=document.getElementById("playBtn");
+const volBtn=document.getElementById("volBtn");
+const slider=document.getElementById("volSlider");
 
-// default song
-music.src = songSelect.value;
-music.volume = volume.value/100;
+music.volume = 0.25; // default soft volume
+
+// start music on first click (browser rule)
+document.body.addEventListener("click",()=>{
+  music.play().catch(()=>{});
+},{once:true});
+
+// volume toggle
+volBtn.onclick=()=>{
+  slider.style.display =
+    slider.style.display==="block" ? "none" : "block";
+};
 
 // volume control
-volume.oninput = ()=>{
-  music.volume = volume.value/100;
-};
-
-// song change
-songSelect.onchange = ()=>{
-  music.src = songSelect.value;
-  music.play();
-};
-
-// play button
-playBtn.onclick = ()=>{
-  music.play();
-  playBtn.innerText="🎧 Playing…";
+slider.oninput=()=>{
+  music.volume = slider.value/100;
 };
 
 // countdown
@@ -186,10 +169,8 @@ function update(){
   if(now>target) target=new Date(year+1,1,28,0,0,0);
 
   const diff=target-now;
-
   if(diff<=0){
     music.pause();
-    music.currentTime=0;
     return;
   }
 
@@ -204,4 +185,4 @@ update();
 </script>
 
 </body>
-</html>
+    </html>
