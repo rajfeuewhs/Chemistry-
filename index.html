@@ -1,205 +1,176 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Coming Soon</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <title>Countdown</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<style>
-body{
-  margin:0;
-  height:100vh;
-  background:#111;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  font-family:system-ui, sans-serif;
-  color:#eee;
-  overflow:hidden;
-}
+  <style>
+    /* Reset */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-.container{
-  text-align:center;
-}
+    html, body {
+      width: 100%;
+      height: 100%;
+      font-family: "Segoe UI", sans-serif;
+      overflow: hidden;
+      color: #ffffff;
+    }
 
-.title{
-  font-size:28px;
-  letter-spacing:4px;
-  margin-bottom:35px;
-}
+    /* Moving Background */
+    .background {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(
+        120deg,
+        #0f2027,
+        #203a43,
+        #2c5364,
+        #1b1f3b
+      );
+      background-size: 400% 400%;
+      animation: bgMove 25s ease infinite;
+      z-index: -2;
+    }
 
-.timer{
-  display:flex;
-  gap:22px;
-}
+    /* Soft light overlay */
+    .background::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(
+        circle at 30% 30%,
+        rgba(255,255,255,0.08),
+        transparent 40%
+      ),
+      radial-gradient(
+        circle at 70% 70%,
+        rgba(255,255,255,0.06),
+        transparent 45%
+      );
+      animation: lightMove 18s ease-in-out infinite alternate;
+    }
 
-.block{
-  width:110px;
-}
+    @keyframes bgMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
 
-.card{
-  height:120px;
-  background:linear-gradient(#2a2a2a,#141414);
-  border-radius:14px;
-  position:relative;
-  box-shadow:
-    inset 0 1px 2px rgba(255,255,255,.15),
-    0 10px 25px rgba(0,0,0,.7);
-}
+    @keyframes lightMove {
+      0% { transform: translate(-30px, -30px); }
+      100% { transform: translate(30px, 30px); }
+    }
 
-.card::after{
-  content:"";
-  position:absolute;
-  top:50%;
-  left:0;
-  right:0;
-  height:2px;
-  background:#000;
-  opacity:.6;
-}
+    /* Center container */
+    .container {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
 
-.num{
-  font-size:56px;
-  font-weight:600;
-  line-height:120px;
-}
+    /* Countdown layout */
+    .countdown {
+      display: flex;
+      gap: 16px;
+      padding: 20px;
+      background: rgba(0,0,0,0.25);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+    }
 
-.label{
-  margin-top:10px;
-  font-size:13px;
-  letter-spacing:1px;
-  color:#caa24d;
-}
+    .box {
+      min-width: 70px;
+    }
 
-/* 🔊 Side volume control */
-.volume-box{
-  position:fixed;
-  right:14px;
-  top:50%;
-  transform:translateY(-50%);
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-}
+    .num {
+      font-size: 42px;
+      font-weight: 600;
+      line-height: 1;
+      transition: transform 0.4s ease, opacity 0.4s ease;
+    }
 
-.vol-btn{
-  background:#222;
-  color:#fff;
-  border:none;
-  border-radius:50%;
-  width:42px;
-  height:42px;
-  font-size:18px;
-}
+    .label {
+      margin-top: 6px;
+      font-size: 12px;
+      letter-spacing: 1px;
+      opacity: 0.7;
+    }
 
-.vol-slider{
-  display:none;
-  margin-top:10px;
-  transform:rotate(-90deg);
-  width:120px;
-}
-</style>
+    /* Responsive */
+    @media (max-width: 600px) {
+      .num {
+        font-size: 34px;
+      }
+      .countdown {
+        gap: 12px;
+        padding: 16px;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-<div class="container">
-  <div class="title">COMING SOON …</div>
+  <div class="background"></div>
 
-  <div class="timer">
-    <div class="block">
-      <div class="card"><div id="days" class="num">00</div></div>
-      <div class="label">DAYS</div>
-    </div>
-
-    <div class="block">
-      <div class="card"><div id="hours" class="num">00</div></div>
-      <div class="label">HOURS</div>
-    </div>
-
-    <div class="block">
-      <div class="card"><div id="minutes" class="num">00</div></div>
-      <div class="label">MINUTES</div>
-    </div>
-
-    <div class="block">
-      <div class="card"><div id="seconds" class="num">00</div></div>
-      <div class="label">SECONDS</div>
+  <div class="container">
+    <div class="countdown">
+      <div class="box">
+        <div class="num" id="days">00</div>
+        <div class="label">DAYS</div>
+      </div>
+      <div class="box">
+        <div class="num" id="hours">00</div>
+        <div class="label">HOURS</div>
+      </div>
+      <div class="box">
+        <div class="num" id="minutes">00</div>
+        <div class="label">MINUTES</div>
+      </div>
+      <div class="box">
+        <div class="num" id="seconds">00</div>
+        <div class="label">SECONDS</div>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- 🔊 Volume control -->
-<div class="volume-box">
-  <button class="vol-btn" id="volBtn">🔊</button>
-  <input type="range" id="volSlider" class="vol-slider" min="0" max="100" value="25">
-</div>
+  <script>
+    // 🔧 TARGET DATE (change if needed)
+    const targetDate = new Date("2026-02-28T00:00:00").getTime();
 
-<!-- 🎵 Background Music (Google Drive) -->
-<audio id="bgMusic" loop>
-  <source src="https://drive.google.com/uc?export=download&id=1twlFpSG0QEGZORZUXR3vpj9Qi7B3SRl" type="audio/mpeg">
-</audio>
+    const d = document.getElementById("days");
+    const h = document.getElementById("hours");
+    const m = document.getElementById("minutes");
+    const s = document.getElementById("seconds");
 
-<script>
-/* countdown elements */
-const d = document.getElementById("days");
-const h = document.getElementById("hours");
-const m = document.getElementById("minutes");
-const s = document.getElementById("seconds");
+    function updateCountdown() {
+      const now = new Date().getTime();
+      let diff = targetDate - now;
 
-/* music + volume */
-const music = document.getElementById("bgMusic");
-const volBtn = document.getElementById("volBtn");
-const slider = document.getElementById("volSlider");
+      if (diff < 0) diff = 0;
 
-music.volume = 0.25; // default soft volume
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((diff / (1000 * 60)) % 60);
+      const seconds = Math.floor((diff / 1000) % 60);
 
-/* mobile browser rule: start music on first tap */
-document.body.addEventListener("click", () => {
-  music.play().catch(()=>{});
-}, { once:true });
+      d.textContent = String(days).padStart(2, "0");
+      h.textContent = String(hours).padStart(2, "0");
+      m.textContent = String(minutes).padStart(2, "0");
+      s.textContent = String(seconds).padStart(2, "0");
+    }
 
-/* volume button toggle */
-volBtn.onclick = () => {
-  slider.style.display =
-    slider.style.display === "block" ? "none" : "block";
-};
-
-/* volume change */
-slider.oninput = () => {
-  music.volume = slider.value / 100;
-};
-
-/* countdown logic */
-function update(){
-  const now = new Date();
-  let year = now.getFullYear();
-  let target = new Date(year, 1, 28, 0, 0, 0); // 28 Feb
-
-  if(now > target){
-    target = new Date(year + 1, 1, 28, 0, 0, 0);
-  }
-
-  const diff = target - now;
-
-  if(diff <= 0){
-    music.pause();
-    d.innerText = "00";
-    h.innerText = "00";
-    m.innerText = "00";
-    s.innerText = "00";
-    return;
-  }
-
-  d.innerText = Math.floor(diff / 86400000);
-  h.innerText = Math.floor(diff / 3600000) % 24;
-  m.innerText = Math.floor(diff / 60000) % 60;
-  s.innerText = Math.floor(diff / 1000) % 60;
-}
-
-setInterval(update, 1000);
-update();
-</script>
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+  </script>
 
 </body>
 </html>
