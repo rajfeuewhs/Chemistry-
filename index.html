@@ -6,87 +6,106 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
 body {
   height: 100vh;
-  background: linear-gradient(270deg, #020024, #090979, #00d4ff);
-  background-size: 400% 400%;
-  animation: bg 12s ease infinite;
+  background: radial-gradient(circle at top, #0a0f2c, #000);
   display: flex;
   justify-content: center;
   align-items: center;
-  font-family: system-ui, sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   color: #eafcff;
+  overflow: hidden;
 }
 
-@keyframes bg {
+/* soft moving background */
+body::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, #0d1b3d, #001f3f, #0d1b3d);
+  background-size: 300% 300%;
+  animation: bgMove 18s ease infinite;
+  opacity: 0.35;
+}
+
+@keyframes bgMove {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 }
 
 .container {
+  position: relative;
   text-align: center;
+  z-index: 1;
 }
 
 .title {
-  font-size: 22px;
-  letter-spacing: 2px;
-  margin-bottom: 25px;
-  opacity: 0.85;
+  font-size: 14px;
+  letter-spacing: 3px;
+  opacity: 0.7;
+  margin-bottom: 30px;
 }
 
 .time {
   display: flex;
-  gap: 18px;
+  gap: 22px;
 }
 
 .box {
-  background: rgba(0,0,0,0.45);
+  min-width: 96px;
   padding: 18px 20px;
-  border-radius: 14px;
-  min-width: 95px;
+  border-radius: 18px;
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(12px);
 }
 
 .number {
-  font-size: 52px;
-  font-weight: 300;
-  transition: all 0.4s ease;
+  font-size: 56px;
+  font-weight: 200;
+  letter-spacing: 3px;
 }
 
-.label {
-  font-size: 11px;
-  margin-top: 6px;
-  color: #b5e9ff;
-  letter-spacing: 1px;
-}
-
-/* SOFT SLIDE ANIMATION */
+/* ultra soft slide */
 .slide {
-  animation: slideDown 0.4s ease;
+  animation: softSlide 0.9s cubic-bezier(0.25, 1, 0.3, 1);
 }
 
-@keyframes slideDown {
+@keyframes softSlide {
   from {
-    transform: translateY(-20px);
+    transform: translateY(-26px);
     opacity: 0;
+    filter: blur(6px);
   }
   to {
     transform: translateY(0);
     opacity: 1;
+    filter: blur(0);
   }
+}
+
+.label {
+  margin-top: 8px;
+  font-size: 10px;
+  letter-spacing: 2px;
+  opacity: 0.55;
 }
 
 .fullscreen-btn {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: rgba(255,255,255,0.85);
-  color: black;
-  border: none;
-  padding: 10px 14px;
+  bottom: 18px;
+  right: 18px;
+  padding: 8px 12px;
   border-radius: 10px;
+  border: none;
+  background: rgba(255,255,255,0.85);
+  font-size: 12px;
   font-weight: 600;
 }
 </style>
@@ -95,7 +114,7 @@ body {
 <body>
 
 <div class="container">
-  <div class="title">28 FEBRUARY COUNTDOWN</div>
+  <div class="title">COUNTDOWN TO 28 FEBRUARY</div>
 
   <div class="time">
     <div class="box">
@@ -113,10 +132,10 @@ body {
   </div>
 </div>
 
-<button class="fullscreen-btn" onclick="goFull()">FULLSCREEN</button>
+<button class="fullscreen-btn" onclick="goFull()">FULL</button>
 
 <audio id="alarm">
-  <source src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg">
+  <source src="https://actions.google.com/sounds/v1/alarms/soft_bell.ogg">
 </audio>
 
 <script>
@@ -125,7 +144,7 @@ const m = document.getElementById("minutes");
 const s = document.getElementById("seconds");
 const alarm = document.getElementById("alarm");
 
-function softUpdate(el, value) {
+function softSet(el, value) {
   if (el.innerText !== value) {
     el.classList.remove("slide");
     void el.offsetWidth;
@@ -143,9 +162,9 @@ function update() {
   const diff = target - now;
 
   if (diff <= 0) {
-    softUpdate(h, "00");
-    softUpdate(m, "00");
-    softUpdate(s, "00");
+    softSet(h, "00");
+    softSet(m, "00");
+    softSet(s, "00");
     alarm.play();
     return;
   }
@@ -154,12 +173,12 @@ function update() {
   const minutes = String(Math.floor((diff / 60000) % 60)).padStart(2, "0");
   const seconds = String(Math.floor((diff / 1000) % 60)).padStart(2, "0");
 
-  softUpdate(h, hours);
-  softUpdate(m, minutes);
-  softUpdate(s, seconds);
+  softSet(h, hours);
+  softSet(m, minutes);
+  softSet(s, seconds);
 }
 
-setInterval(update, 1000);
+setInterval(update, 950);
 update();
 
 function goFull() {
